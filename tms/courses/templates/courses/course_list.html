@@ -1,0 +1,30 @@
+<!-- templates/courses/course_list.html -->
+{% extends 'base.html' %}
+
+{% block title %}Courses - TMS{% endblock %}
+
+{% block content %}
+<div class="container mx-auto">
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">Available Courses</h1>
+        {% if user.is_authenticated and user.user_type in 'admin,trainer' %}
+        <a href="{% url 'courses:course_create' %}" 
+           class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+            Create New Course
+        </a>
+        {% endif %}
+    </div>
+
+    <!-- Course Grid -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {% for course in courses %}
+            {% include "components/course_card.html" with course=course %}
+        {% empty %}
+        <div class="col-span-3 text-center py-12">
+            <p class="text-gray-600">No courses available at the moment.</p>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

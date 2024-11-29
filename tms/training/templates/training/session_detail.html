@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Session Header -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h1 class="text-2xl font-bold text-gray-900 mb-4">{{ session.title }}</h1>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+                <p class="text-sm text-gray-500">Date & Time</p>
+                <p class="text-lg font-medium">{{ session.date|date:"F d, Y h:i A" }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Duration</p>
+                <p class="text-lg font-medium">{{ session.duration }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Trainer</p>
+                <p class="text-lg font-medium">{{ session.trainer.get_full_name }}</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Session Details -->
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Session Details</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="text-sm text-gray-500">Course</p>
+                <p class="text-lg font-medium">{{ session.course.title }}</p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Location</p>
+                <p class="text-lg font-medium">
+                    {% if session.is_online %}
+                        Online Session
+                        {% if session.meeting_link %}
+                        <a href="{{ session.meeting_link }}" target="_blank" 
+                           class="text-blue-600 hover:text-blue-800 ml-2">
+                            Join Meeting
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        {{ session.venue.name }}
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Attendance Section (Visible to Trainers) -->
+    {% if user.user_type == 'trainer' and user == session.trainer %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Attendance</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Participant
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Status
+                        </th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Check-in Time
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for attendance in session.attendances.all %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ attendance.participant.get_full_name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if attendance.is_present %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                Present
+                            </span>
+                            {% else %}
+                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-red-100 text-red-800">
+                                Absent
+                            </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {{ attendance.check_in_time|default:"-"|date:"h:i A" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Participant Actions -->
+    {% if user.user_type == 'participant' %}
+    <div class="bg-white rounded-lg shadow-md p-6 mb-6">
+        <h2 class="text-xl font-semibold mb-4">Your Actions</h2>
+        <div class="space-x-4">
+            <!-- Mark Attendance -->
+            {% if not session.attendances.filter.participant.id.equals.user.id %}
+            <form method="post" action="{% url 'training:mark_attendance' session.id %}" class="inline">
+                {% csrf_token %}
+                <button type="submit" 
+                        class="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700">
+                    Mark Attendance
+                </button>
+            </form>
+            {% endif %}
+
+            <!-- Submit Evaluation -->
+            {% if session.date < current_time and not session.evaluation_set.filter.participant.id.equals.user.id %}
+            <a href="{% url 'training:submit_evaluation' session.id %}" 
+               class="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700 inline-block">
+                Submit Evaluation
+            </a>
+            {% endif %}
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Evaluation Summary (Visible to Trainers) -->
+    {% if user == session.trainer and session.evaluation_set.exists %}
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Evaluation Summary</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <p class="text-sm text-gray-500">Average Content Rating</p>
+                <p class="text-3xl font-bold text-blue-600">
+                    {{ session.evaluation_set.all|dictsort:"content_rating"|last|floatformat:1 }}/5
+                </p>
+            </div>
+            <div>
+                <p class="text-sm text-gray-500">Average Trainer Rating</p>
+                <p class="text-3xl font-bold text-green-600">
+                    {{ session.evaluation_set.all|dictsort:"trainer_rating"|last|floatformat:1 }}/5
+                </p>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

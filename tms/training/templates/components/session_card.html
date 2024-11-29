@@ -1,0 +1,30 @@
+<!-- training/templates/components/session_card.html -->
+<div class="bg-white shadow rounded-lg p-6 mb-4">
+    <div class="flex justify-between items-start">
+        <div>
+            <h3 class="text-xl font-semibold text-gray-900">{{ session.course.title }}</h3>
+            <p class="text-gray-600">{{ session.date|date:"F j, Y" }} at {{ session.date|date:"g:i A" }}</p>
+            <p class="text-gray-600">
+                {% if session.is_online %}
+                    Online Session
+                {% else %}
+                    {{ session.venue.name|default:"No venue assigned" }}
+                {% endif %}
+            </p>
+        </div>
+        <div>
+            <span class="px-3 py-1 text-sm rounded-full {% if session.is_online %}bg-blue-100 text-blue-800{% else %}bg-green-100 text-green-800{% endif %}">
+                {{ session.is_online|yesno:"Online,In-Person" }}
+            </span>
+        </div>
+    </div>
+    <div class="mt-4 flex justify-between items-center">
+        <div class="flex items-center">
+            <img class="h-8 w-8 rounded-full" src="{{ session.trainer.profile_image.url }}" alt="{{ session.trainer.get_full_name }}">
+            <span class="ml-2 text-sm text-gray-600">{{ session.trainer.get_full_name }}</span>
+        </div>
+        <a href="{% url 'training:session_detail' session.pk %}" class="text-blue-600 hover:text-blue-800">
+            View Details →
+        </a>
+    </div>
+</div>

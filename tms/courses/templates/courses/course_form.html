@@ -1,0 +1,157 @@
+<!-- templates/courses/course_form.html -->
+{% extends 'base.html' %}
+
+{% block title %}{% if form.instance.pk %}Edit Course{% else %}New Course{% endif %} - TMS{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="max-w-3xl mx-auto">
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h1 class="text-2xl font-bold mb-6">
+                {% if form.instance.pk %}Edit Course{% else %}Create New Course{% endif %}
+            </h1>
+
+            <form method="POST" enctype="multipart/form-data" class="space-y-6">
+                {% csrf_token %}
+
+                {% if form.non_field_errors %}
+                <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded relative" role="alert">
+                    {{ form.non_field_errors }}
+                </div>
+                {% endif %}
+
+                <!-- Title Field -->
+                <div>
+                    <label for="{{ form.title.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Course Title
+                    </label>
+                    <div class="mt-1">
+                        {{ form.title }}
+                        {% if form.title.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.title.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Cover Image Field -->
+                <div>
+                    <label for="{{ form.cover_image.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Cover Image
+                    </label>
+                    <div class="mt-1">
+                        {{ form.cover_image }}
+                        {% if form.cover_image.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.cover_image.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Category Field -->
+                <div>
+                    <label for="{{ form.category.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Category
+                    </label>
+                    <div class="mt-1">
+                        {{ form.category }}
+                        {% if form.category.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.category.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Description Field -->
+                <div>
+                    <label for="{{ form.description.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Description
+                    </label>
+                    <div class="mt-1">
+                        {{ form.description }}
+                        {% if form.description.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.description.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Dates -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.start_date.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Start Date
+                        </label>
+                        <div class="mt-1">
+                            {{ form.start_date }}
+                            {% if form.start_date.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.start_date.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.end_date.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            End Date
+                        </label>
+                        <div class="mt-1">
+                            {{ form.end_date }}
+                            {% if form.end_date.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.end_date.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Capacity and Format -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="{{ form.capacity.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Capacity
+                        </label>
+                        <div class="mt-1">
+                            {{ form.capacity }}
+                            {% if form.capacity.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.capacity.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="{{ form.is_online.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                            Format
+                        </label>
+                        <div class="mt-1">
+                            {{ form.is_online }}
+                            {% if form.is_online.errors %}
+                            <p class="mt-2 text-sm text-red-600">{{ form.is_online.errors }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trainers Field -->
+                <div>
+                    <label for="{{ form.trainers.id_for_label }}" class="block text-sm font-medium text-gray-700">
+                        Trainers
+                    </label>
+                    <div class="mt-1">
+                        {{ form.trainers }}
+                        {% if form.trainers.errors %}
+                        <p class="mt-2 text-sm text-red-600">{{ form.trainers.errors }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="flex justify-end space-x-4 pt-4">
+                    <a href="{% url 'courses:course_list' %}" 
+                       class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200">
+                        Cancel
+                    </a>
+                    <button type="submit" 
+                            class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                        {% if form.instance.pk %}Update Course{% else %}Create Course{% endif %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,47 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}TMS{% endblock %}</title>
+    <script src="https://unpkg.com/htmx.org@1.9.10"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="min-h-screen bg-gray-100">
+    <!-- Sidebar - Fixed position -->
+    <aside class="fixed inset-y-0 left-0 w-64 h-full bg-gray-800">
+        {% include "components/sidebar.html" %}
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="ml-64"> <!-- Add margin equal to sidebar width -->
+        <!-- Topbar -->
+        <header class="fixed top-0 right-0 left-64 bg-white shadow-md z-10">
+            {% include "components/topbar.html" %}
+        </header>
+
+        <!-- Main Content Area -->
+        <main class="pt-16"> <!-- Add padding for topbar height -->
+            <div class="px-6 py-8">
+                {% if messages %}
+                    {% include "components/alerts.html" %}
+                {% endif %}
+                
+                <div class="max-w-7xl mx-auto">
+                    {% block content %}{% endblock %}
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        {% comment %} <footer class="bg-white shadow-md mt-auto">
+            {% include "components/footer.html" %}
+        </footer> {% endcomment %}
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

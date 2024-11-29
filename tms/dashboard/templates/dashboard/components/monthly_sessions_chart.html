@@ -1,0 +1,37 @@
+<canvas id="monthlySessionsChart"></canvas>
+
+<script>
+const monthlySessionsCtx = document.getElementById('monthlySessionsChart');
+const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
+new Chart(monthlySessionsCtx, {
+    type: 'line',
+    data: {
+        labels: {{ sessions_by_month|safe|map:'month'|list|stringformat:'s' }},
+        datasets: [{
+            label: 'Number of Sessions',
+            data: {{ sessions_by_month|safe|map:'count'|list|stringformat:'s' }},
+            borderColor: 'rgb(59, 130, 246)',
+            tension: 0.1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            },
+            x: {
+                ticks: {
+                    callback: function(value) {
+                        return monthNames[value - 1];
+                    }
+                }
+            }
+        }
+    }
+});
+</script>

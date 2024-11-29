@@ -1,0 +1,30 @@
+<!-- training/templates/training/session_list.html -->
+{% extends "base.html" %}
+
+{% block title %}Training Sessions{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4">
+    <div class="flex justify-between items-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-900">Training Sessions</h1>
+        {% if user.user_type == 'admin' or user.user_type == 'trainer' %}
+        <a href="{% url 'training:session_create' %}" 
+           class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+            Create New Session
+        </a>
+        {% endif %}
+    </div>
+
+    {% if sessions %}
+        <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            {% for session in sessions %}
+                {% include "components/session_card.html" with session=session %}
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-12">
+            <p class="text-gray-600">No training sessions available.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

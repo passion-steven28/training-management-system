@@ -1,0 +1,35 @@
+<canvas id="ratingsChart"></canvas>
+
+<script>
+new Chart(document.getElementById('ratingsChart'), {
+    type: 'bar',
+    data: {
+        labels: ['Content Rating', 'Trainer Rating'],
+        datasets: [{
+            label: 'Average Rating',
+            data: [
+                {{ avg_ratings.avg_content|floatformat:1 }},
+                {{ avg_ratings.avg_trainer|floatformat:1 }}
+            ],
+            backgroundColor: [
+                'rgba(59, 130, 246, 0.5)',
+                'rgba(16, 185, 129, 0.5)'
+            ],
+            borderColor: [
+                'rgb(59, 130, 246)',
+                'rgb(16, 185, 129)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        scales: {
+            y: {
+                beginAtZero: true,
+                max: 5
+            }
+        }
+    }
+});
+</script>

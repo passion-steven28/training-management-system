@@ -1,0 +1,86 @@
+<!-- templates/components/course_card.html -->
+<div class="bg-white rounded-lg shadow-md overflow-hidden">
+    <!-- Course Image -->
+    <div class="aspect-w-16 aspect-h-9">
+        {% if course.cover_image %}
+            <img src="{{ course.cover_image.url }}" 
+                 alt="{{ course.title }}" 
+                 class="w-full h-48 object-cover">
+        {% else %}
+            <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
+                <span class="text-gray-400">No image available</span>
+            </div>
+        {% endif %}
+    </div>
+
+    <!-- Course Card Header -->
+    <div class="p-4 border-b">
+        <div class="flex justify-between items-start">
+            <div>
+                <a href="{% url 'courses:course_detail' course.pk %}" 
+                   class="text-xl font-semibold text-gray-800 hover:text-blue-600">
+                    {{ course.title }}
+                </a>
+                <p class="text-sm text-gray-600">
+                    {% for trainer in course.trainers.all %}
+                        {{ trainer.get_full_name }}{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Course Card Body -->
+    <div class="p-4">
+        <p class="text-gray-600 mb-4 line-clamp-2">{{ course.description }}</p>
+        
+        <!-- Course Details -->
+        <div class="text-sm flex item-center gap-2">
+            <div>
+                <p class="text-gray-600">
+                    <span class="font-medium">Start Date:</span>
+                    {{ course.start_date|date:"M d, Y" }}
+                </p>
+                <p class="text-gray-600">
+                    <span class="font-medium">Duration:</span>
+                    {{ course.end_date|timeuntil:course.start_date }}
+                </p>
+            </div>
+            <div>
+                <p class="text-gray-600">
+                    <span class="font-medium">Capacity:</span>
+                    {{ course.participants.count }}/{{ course.capacity }}
+                </p>
+                <p class="text-gray-600">
+                    <span class="font-medium">Format:</span>
+                    {% if course.is_online %}Online{% else %}In-Person{% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Card Footer -->
+    <div class="p-4 bg-gray-50 border-t">
+        {% if user.is_authenticated %}
+            {% if user not in course.participants.all %}
+                <form method="POST" action="{% url 'courses:course_enroll' course.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" 
+                            class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                        Enroll Now
+                    </button>
+                </form>
+            {% else %}
+                <a href="{% url 'courses:course_detail' course.pk %}"
+                   class="block text-center bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                    View Course
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'accounts:login' %}" 
+               class="block text-center bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg">
+                Login to Enroll
+            </a>
+        {% endif %}
+    </div>
+</div>

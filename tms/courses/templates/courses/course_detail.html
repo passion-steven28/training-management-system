@@ -1,0 +1,115 @@
+<!-- templates/courses/course_detail.html -->
+{% extends 'base.html' %}
+
+{% block title %}{{ course.title }} - TMS{% endblock %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <!-- Course Header -->
+    <div class="bg-white rounded-lg shadow-md overflow-hidden mb-8">
+        <div class="relative">
+            {% if course.cover_image %}
+                <img src="{{ course.cover_image.url }}" 
+                     alt="{{ course.title }}" 
+                     class="w-full h-64 object-cover">
+            {% else %}
+                <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                    <span class="text-gray-400">No image available</span>
+                </div>
+            {% endif %}
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/60 to-transparent p-6">
+                <h1 class="text-3xl font-bold text-white">{{ course.title }}</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Course Content -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Main Content -->
+        <div class="lg:col-span-2">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-2xl font-semibold mb-4">About This Course</h2>
+                <p class="text-gray-600">{{ course.description }}</p>
+            </div>
+
+            <!-- Course Materials -->
+            {% if user in course.participants.all or user in course.trainers.all %}
+            <div class="bg-white rounded-lg shadow-md p-6">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">Course Materials</h2>
+                    {% if user in course.trainers.all %}
+                    <a href="{% url 'courses:add_material' course.pk %}" 
+                       class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        Add Material
+                    </a>
+                    {% endif %}
+                </div>
+                <div class="space-y-4">
+                    {% for material in course.material_set.all %}
+                    <div class="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                        <div>
+                            <h3 class="font-medium">{{ material.title }}</h3>
+                            <p class="text-sm text-gray-600">{{ material.description }}</p>
+                        </div>
+                        <a href="{{ material.file.url }}" 
+                           class="text-blue-600 hover:text-blue-800"
+                           download>
+                            Download
+                        </a>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-600">No materials available yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <h2 class="text-xl font-semibold mb-4">Course Details</h2>
+                <div class="space-y-4">
+                    <div>
+                        <h3 class="font-medium text-gray-700">Trainers</h3>
+                        <div class="mt-1">
+                            {% for trainer in course.trainers.all %}
+                            <p class="text-gray-600">{{ trainer.get_full_name }}</p>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700">Schedule</h3>
+                        <p class="text-gray-600">Starts: {{ course.start_date|date:"M d, Y" }}</p>
+                        <p class="text-gray-600">Ends: {{ course.end_date|date:"M d, Y" }}</p>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700">Format</h3>
+                        <p class="text-gray-600">{% if course.is_online %}Online{% else %}In-Person{% endif %}</p>
+                    </div>
+                    <div>
+                        <h3 class="font-medium text-gray-700">Capacity</h3>
+                        <p class="text-gray-600">{{ course.participants.count }}/{{ course.capacity }} enrolled</p>
+                    </div>
+                </div>
+            </div>
+
+            {% if user.is_authenticated %}
+                {% if user not in course.participants.all %}
+                    <form method="POST" action="{% url 'courses:course_enroll' course.pk %}">
+                        {% csrf_token %}
+                        <button type="submit" 
+                                class="w-full bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg">
+                            Enroll Now
+                        </button>
+                    </form>
+                {% else %}
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+                        <p class="text-blue-700">You are enrolled in this course</p>
+                    </div>
+                {% endif %}
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

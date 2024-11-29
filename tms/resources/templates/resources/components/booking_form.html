@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h2 class="text-2xl font-bold mb-6">Book Venue: {{ venue.name }}</h2>
+
+    <form hx-post="{% url 'check-venue-availability' %}" 
+          hx-trigger="change" 
+          hx-target="#availability-status"
+          class="space-y-6 bg-white p-6 rounded-lg shadow">
+        {% csrf_token %}
+        <input type="hidden" name="venue_id" value="{{ venue.id }}">
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Start Time</label>
+                <input type="datetime-local" 
+                       name="start_time" 
+                       required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700">End Time</label>
+                <input type="datetime-local" 
+                       name="end_time" 
+                       required
+                       class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+        </div>
+
+        <div id="availability-status" class="mt-4"></div>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Purpose</label>
+            <textarea name="purpose"
+                      rows="3"
+                      required
+                      placeholder="Please describe the purpose of your booking"
+                      class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500"></textarea>
+        </div>
+
+        <div class="flex items-center justify-end space-x-4">
+            <a href="{% url 'venue-list' %}" 
+               class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-gray-700 bg-gray-100 hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500">
+                Cancel
+            </a>
+            <button type="submit"
+                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Book Venue
+            </button>
+        </div>
+    </form>
+</div>
+
+{% block extra_js %}
+<script>
+    document.body.addEventListener('htmx:afterRequest', function(evt) {
+        if (evt.detail.target.id === 'availability-status') {
+            const response = JSON.parse(evt.detail.xhr.response);
+            const statusDiv = document.getElementById('availability-status');
+            
+            if (response.available) {
+                statusDiv.innerHTML = '<div class="p-4 bg-green-100 text-green-700 rounded-md">Venue is available for selected time slot!</div>';
+            } else {
+                statusDiv.innerHTML = '<div class="p-4 bg-red-100 text-red-700 rounded-md">Venue is not available for selected time slot.</div>';
+            }
+        }
+    });
+</script>
+{% endblock %}
+{% endblock %}

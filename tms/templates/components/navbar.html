@@ -1,0 +1,28 @@
+<!-- templates/components/navbar.html -->
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4">
+        <div class="flex justify-between h-16">
+            <div class="flex items-center">
+                <a href="/" class="flex-shrink-0">
+                    <span class="text-xl font-bold text-gray-800">TMS</span>
+                </a>
+                <div class="hidden md:ml-6 md:flex space-x-4">
+                    <a href="{% url 'courses:course_list' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2">Courses</a>
+                </div>
+            </div>
+            <div class="flex items-center">
+                {% if user.is_authenticated %}
+                    <div class="relative" x-data="{ open: false }">
+                        <button class="flex items-center text-gray-600 hover:text-gray-900">
+                            {{ user.username }}
+                        </button>
+                        <a href="{% url 'accounts:logout' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2">Logout</a>
+                    </div>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}" class="text-gray-600 hover:text-gray-900 px-3 py-2">Login</a>
+                    <a href="{% url 'accounts:register' %}" class="text-indigo-600 hover:text-indigo-900 px-3 py-2">Register</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</nav>

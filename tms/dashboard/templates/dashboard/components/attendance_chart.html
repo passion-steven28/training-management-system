@@ -1,0 +1,35 @@
+<div class="w-full max-w-md mx-auto">
+    <canvas id="attendanceChart"></canvas>
+</div>
+
+<script>
+new Chart(document.getElementById('attendanceChart'), {
+    type: 'doughnut',
+    data: {
+        labels: ['Present', 'Absent'],
+        datasets: [{
+            data: [
+                {{ attendance_stats }},
+                {{ total_participants|multiply:total_sessions|subtract:attendance_stats }}
+            ],
+            backgroundColor: [
+                'rgba(16, 185, 129, 0.5)',
+                'rgba(239, 68, 68, 0.5)'
+            ],
+            borderColor: [
+                'rgb(16, 185, 129)',
+                'rgb(239, 68, 68)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
