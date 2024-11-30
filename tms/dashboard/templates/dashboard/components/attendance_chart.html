@@ -1,3 +1,5 @@
+{% load dashboard_extras %}
+
 <div class="w-full max-w-md mx-auto">
     <canvas id="attendanceChart"></canvas>
 </div>
@@ -8,10 +10,7 @@ new Chart(document.getElementById('attendanceChart'), {
     data: {
         labels: ['Present', 'Absent'],
         datasets: [{
-            data: [
-                {{ attendance_stats }},
-                {{ total_participants|multiply:total_sessions|subtract:attendance_stats }}
-            ],
+            data: {{ attendance_chart_data|safe }},
             backgroundColor: [
                 'rgba(16, 185, 129, 0.5)',
                 'rgba(239, 68, 68, 0.5)'

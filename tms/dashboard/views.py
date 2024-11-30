@@ -6,6 +6,8 @@ from training.models import Session, Attendance, Evaluation
 from django.db.models.functions import ExtractMonth
 from accounts.models import CustomUser
 from django.utils import timezone
+from django.core.serializers.json import DjangoJSONEncoder
+import json
 
 # Permission checks
 def is_admin(user):
@@ -37,13 +39,16 @@ def admin_dashboard(request):
     ).order_by('date')[:5]
 
     # Sessions by month
-    sessions_by_month = (
-        Session.objects
+    sessions_by_month = list(Session.objects
         .annotate(month=ExtractMonth('date'))
         .values('month')
         .annotate(count=Count('id'))
         .order_by('month')
     )
+
+    # Create separate lists for labels and data
+    months = [item['month'] for item in sessions_by_month]
+    session_counts = [item['count'] for item in sessions_by_month]
 
     # Average ratings
     avg_ratings = Evaluation.objects.aggregate(
@@ -53,11 +58,12 @@ def admin_dashboard(request):
 
     # Attendance statistics
     total_attendance = Attendance.objects.filter(is_present=True).count()
-    attendance_rate = (
-        (total_attendance / (total_participants * total_sessions) * 100)
-        if total_participants and total_sessions 
-        else 0
-    )
+    total_possible = total_participants * total_sessions
+    total_absent = total_possible - total_attendance if total_possible > 0 else 0
+    attendance_rate = (total_attendance / total_possible * 100) if total_possible > 0 else 0
+
+    # Prepare attendance chart data
+    attendance_chart_data = json.dumps([total_attendance, total_absent])
 
     # Top rated trainers
     top_trainers = (
@@ -78,8 +84,14 @@ def admin_dashboard(request):
         'recent_sessions': recent_sessions,
         'upcoming_sessions': upcoming_sessions,
         'sessions_by_month': sessions_by_month,
+        'chart_months': json.dumps(months),
+        'chart_data': json.dumps(session_counts),
         'avg_ratings': avg_ratings,
+        'attendance_stats': total_attendance,
+        'total_possible_attendance': total_possible,
+        'total_absent': total_absent,
         'attendance_rate': attendance_rate,
+        'attendance_chart_data': attendance_chart_data,
         'top_trainers': top_trainers,
     }
 

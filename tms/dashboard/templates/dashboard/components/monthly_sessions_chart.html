@@ -7,10 +7,10 @@ const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep
 new Chart(monthlySessionsCtx, {
     type: 'line',
     data: {
-        labels: {{ sessions_by_month|safe|map:'month'|list|stringformat:'s' }},
+        labels: {{ chart_months|safe }},
         datasets: [{
             label: 'Number of Sessions',
-            data: {{ sessions_by_month|safe|map:'count'|list|stringformat:'s' }},
+            data: {{ chart_data|safe }},
             borderColor: 'rgb(59, 130, 246)',
             tension: 0.1
         }]

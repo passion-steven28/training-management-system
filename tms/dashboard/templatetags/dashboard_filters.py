@@ -1,3 +1,4 @@
+# dashboard/templatetags/dashboard_filters.py
 from django import template
 
 register = template.Library()
@@ -9,7 +10,7 @@ def multiply(value, arg):
         return float(value) * float(arg)
     except (ValueError, TypeError):
         return 0
-
+    
 @register.filter
 def subtract(value, arg):
     """Subtract arg from value"""
