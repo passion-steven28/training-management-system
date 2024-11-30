@@ -32,7 +32,66 @@
                 <p class="text-gray-600">{{ course.description }}</p>
             </div>
 
-            <!-- Course Materials -->
+
+            <!-- Course Sessions -->
+            {% if user in course.participants.all or user in course.trainers.all %}
+            <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-semibold">Course Sessions</h2>
+                    {% if user in course.trainers.all %}
+                    <a href="#" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg">
+                        Add Session
+                    </a>
+                    {% endif %}
+                </div>
+                
+                <div class="space-y-4">
+                    {% for session in course.session_set.all %}
+                    <div class="border rounded-lg p-4 hover:bg-gray-50">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-medium text-lg">{{ session.title }}</h3>
+                                <p class="text-gray-600">
+                                    {{ session.date|date:"l, F j, Y" }} at {{ session.date|date:"g:i A" }}
+                                </p>
+                                <p class="text-gray-600">Duration: {{ session.duration }}</p>
+                                {% if session.is_online %}
+                                    <p class="text-blue-600">
+                                        Online Session 
+                                        {% if session.meeting_link %}
+                                        - <a href="{{ session.meeting_link }}" target="_blank" class="underline">Join Meeting</a>
+                                        {% endif %}
+                                    </p>
+                                {% else %}
+                                    <p class="text-gray-600">
+                                        Venue: {{ session.venue|default:"To be announced" }}
+                                    </p>
+                                {% endif %}
+                            </div>
+                            <div>
+                                <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium 
+                                           {% if session.date|date:'Y-m-d' == now|date:'Y-m-d' %}
+                                           bg-green-100 text-green-800
+                                           {% else %}
+                                           bg-gray-100 text-gray-800
+                                           {% endif %}">
+                                    {% if session.date|date:'Y-m-d' == now|date:'Y-m-d' %}
+                                        Today
+                                    {% else %}
+                                        {{ session.date|timeuntil }}
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <p class="text-gray-600 text-center py-4">No sessions scheduled yet.</p>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+                        <!-- Course Materials -->
             {% if user in course.participants.all or user in course.trainers.all %}
             <div class="bg-white rounded-lg shadow-md p-6">
                 <div class="flex justify-between items-center mb-4">

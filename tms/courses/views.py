@@ -12,6 +12,7 @@ from django.views.generic import (
 from django.urls import reverse_lazy
 from django.contrib import messages
 from django.db import transaction
+from django.utils import timezone
 from .models import Course, Material
 from .forms import CourseForm, MaterialForm
 
@@ -28,6 +29,11 @@ class CourseListView(ListView):
 class CourseDetailView(DetailView):
     model = Course
     template_name = "courses/course_detail.html"
+    
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['now'] = timezone.now()
+        return context
 
 
 class CourseCreateView(LoginRequiredMixin, UserPassesTestMixin, CreateView):
