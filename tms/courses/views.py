@@ -96,4 +96,8 @@ def add_material(request, course_pk):
             return redirect("courses:course_detail", pk=course_pk)
     else:
         form = MaterialForm()
-    return render(request, "courses/material_form.html", {"form": form})
+    return render(
+        request, 
+        "courses/material_form.html", 
+        {"form": form, "course_pk": course_pk}
+    )
