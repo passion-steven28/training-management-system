@@ -11,8 +11,27 @@
                 Sign in to your account
             </h2>
         </div>
-        <form class="mt-8 space-y-6" method="POST" hx-post="{% url 'accounts:login' %}" hx-swap="outerHTML">
+
+        {% if messages %}
+        {% for message in messages %}
+        <div class="rounded-md {% if message.tags == 'success' %}bg-green-50{% else %}bg-red-50{% endif %} p-4">
+            <div class="flex">
+                <div class="text-sm {% if message.tags == 'success' %}text-green-700{% else %}text-red-700{% endif %}">
+                    {{ message }}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+
+        <form class="mt-8 space-y-6" method="POST" action="{% url 'accounts:login' %}">
             {% csrf_token %}
+            
+            <!-- Keep 'next' parameter if it exists -->
+            {% if request.GET.next %}
+            <input type="hidden" name="next" value="{{ request.GET.next }}">
+            {% endif %}
+
             <div class="rounded-md shadow-sm -space-y-px">
                 <div>
                     <label for="id_username" class="sr-only">Username</label>
@@ -31,22 +50,28 @@
             {% if form.errors %}
             <div class="rounded-md bg-red-50 p-4">
                 <div class="flex">
-                    <div class="ml-3">
-                        <h3 class="text-sm font-medium text-red-800">
-                            Invalid username or password.
-                        </h3>
+                    <div class="text-sm text-red-700">
+                        Invalid username or password. Please try again.
                     </div>
                 </div>
             </div>
             {% endif %}
 
             <div>
-                <button type="submit" 
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                <button type="submit" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
                     Sign in
                 </button>
             </div>
         </form>
+
+        <div class="text-center">
+            <p class="text-sm text-gray-600">
+                Don't have an account? 
+                <a href="{% url 'accounts:register' %}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    Register here
+                </a>
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}

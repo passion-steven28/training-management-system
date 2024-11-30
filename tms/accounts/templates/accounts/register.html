@@ -10,20 +10,35 @@
             <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
                 Create your account
             </h2>
+            <p class="mt-2 text-center text-sm text-gray-600">
+                Join TMS to start managing your training sessions
+            </p>
         </div>
-        <form class="mt-8 space-y-6" method="POST" hx-post="{% url 'accounts:register' %}" hx-swap="outerHTML">
-            {% csrf_token %}
-            <div class="rounded-md shadow-sm -space-y-px">
+        {% if messages %}
+        <div class="rounded-md bg-red-50 p-4">
+            {% for message in messages %}
+            <div class="text-sm text-red-700">{{ message }}</div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <form method="POST" action="{% url 'accounts:register' %}" class="mt-8 space-y-6">
+            {% csrf_token %}  <!-- Moved to top of form -->
+            <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+            
+            <div class="space-y-4">
                 {% for field in form %}
-                <div class="mb-4">
+                <div>
                     <label for="{{ field.id_for_label }}" class="block text-sm font-medium text-gray-700">
                         {{ field.label }}
                     </label>
-                    {{ field }}
+                    <div class="mt-1">
+                        {{ field }}
+                    </div>
+                    {% if field.help_text %}
+                    <p class="mt-1 text-sm text-gray-500">{{ field.help_text }}</p>
+                    {% endif %}
                     {% if field.errors %}
-                    <p class="mt-2 text-sm text-red-600">
-                        {{ field.errors|join:", " }}
-                    </p>
+                    <p class="mt-2 text-sm text-red-600">{{ field.errors|join:", " }}</p>
                     {% endif %}
                 </div>
                 {% endfor %}
@@ -31,11 +46,20 @@
 
             <div>
                 <button type="submit" 
-                        class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                    Register
+                    class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Create Account
                 </button>
             </div>
         </form>
+
+        <div class="text-center">
+            <p class="text-sm text-gray-600">
+                Already have an account? 
+                <a href="{% url 'accounts:login' %}" class="font-medium text-indigo-600 hover:text-indigo-500">
+                    Sign in here
+                </a>
+            </p>
+        </div>
     </div>
 </div>
 {% endblock %}
