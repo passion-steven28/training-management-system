@@ -6,38 +6,100 @@
 {% block content %}
 <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
     <div class="bg-white shadow overflow-hidden sm:rounded-lg">
-        <div class="px-4 py-5 sm:px-6">
-            <h3 class="text-lg leading-6 font-medium text-gray-900">
-                Profile Information
-            </h3>
+        <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
+            <div>
+                <h3 class="text-lg leading-6 font-medium text-gray-900">
+                    Profile Information
+                </h3>
+                <p class="mt-1 max-w-2xl text-sm text-gray-500">
+                    Personal details and account information
+                </p>
+            </div>
+            <div>
+                <span class="inline-flex items-center px-3 py-0.5 rounded-full text-sm font-medium
+                    {% if user.user_type == 'admin' %}
+                        bg-purple-100 text-purple-800
+                    {% elif user.user_type == 'trainer' %}
+                        bg-green-100 text-green-800
+                    {% else %}
+                        bg-blue-100 text-blue-800
+                    {% endif %}">
+                    {{ user.get_user_type_display }}
+                </span>
+            </div>
         </div>
+
         <div class="border-t border-gray-200">
             <dl>
+                <!-- Profile Picture -->
+                {% if user.profile_picture %}
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Profile Picture</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        <img src="{{ user.profile_picture.url }}" alt="Profile picture" 
+                             class="h-24 w-24 rounded-full object-cover">
+                    </dd>
+                </div>
+                {% endif %}
+
+                <!-- Basic Info -->
                 <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Username
-                    </dt>
+                    <dt class="text-sm font-medium text-gray-500">Full name</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ user.get_full_name|default:"Not provided" }}
+                    </dd>
+                </div>
+
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Username</dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         {{ user.username }}
                     </dd>
                 </div>
-                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        Email address
-                    </dt>
+
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Email address</dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
                         {{ user.email }}
                     </dd>
                 </div>
-                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
-                    <dt class="text-sm font-medium text-gray-500">
-                        User Type
-                    </dt>
+
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Phone number</dt>
                     <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
-                        {{ user.user_type }}
+                        {{ user.phone|default:"Not provided" }}
+                    </dd>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Organization</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ user.organization|default:"Not provided" }}
+                    </dd>
+                </div>
+
+                <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Bio</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ user.bio|default:"No bio provided"|linebreaksbr }}
+                    </dd>
+                </div>
+
+                <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                    <dt class="text-sm font-medium text-gray-500">Member since</dt>
+                    <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                        {{ user.date_joined|date:"F j, Y" }}
                     </dd>
                 </div>
             </dl>
+        </div>
+
+        <!-- Actions -->
+        <div class="px-4 py-3 bg-gray-50 text-right sm:px-6 border-t border-gray-200">
+            <a href="{% url 'accounts:settings' %}" 
+               class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                Edit Profile
+            </a>
         </div>
     </div>
 </div>
